@@ -20,8 +20,12 @@ public class GameManager : MonoBehaviour
     public Slider gameProgressSlider;
     public TextMeshProUGUI currentLevelText;
     public TextMeshProUGUI nextLevelText;
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI highScoreText;
 
     public static int numberOfPassedRings;
+    public static int score = 0;
+
     // Start is called before the first frame update
     
     private void Awake()
@@ -33,6 +37,7 @@ public class GameManager : MonoBehaviour
     {
          Time.timeScale = 1;
          numberOfPassedRings = 0;
+         highScoreText.text = "Best Score\n" + PlayerPrefs.GetInt("HighScore", 0);
        isGameStarted = gameOver = levelCompleted = false;
     }
 
@@ -45,11 +50,15 @@ public class GameManager : MonoBehaviour
 
          int progress = numberOfPassedRings * 100 / FindObjectOfType<HelixManager>().numberOfRings;
           gameProgressSlider.value = progress;
+
+          scoreText.text = score.ToString();
        
         if(Input.GetMouseButtonDown(0) && !isGameStarted)
         {
            if(EventSystem.current.IsPointerOverGameObject())
-              return;
+              {
+                return;
+              }
             isGameStarted = true;
             gamePlayPanel.SetActive(true);
             startMenuPanel.SetActive(false);
@@ -65,6 +74,11 @@ public class GameManager : MonoBehaviour
 
             if(Input.GetButtonDown("Fire1"))
             {
+                if(score > PlayerPrefs.GetInt("HighScore", 0))
+                {
+                    PlayerPrefs.SetInt("HighScore", score);
+                }
+                score = 0;
                 SceneManager.LoadScene("level");
             }
         }
